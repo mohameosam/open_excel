@@ -42,7 +42,7 @@ options:
                 - w: to write the updates_matrix values in the specified calls. Any old cell value will be overwritten. If cell_row is 0, the module will assume an "a" operational mode
                 - a: to append the sheet with a new row at the end of the sheet. The row_no value specified in updates_matrix will be ignored
                 - i: insert the updates_matrix values in the row above the row number specified in the row_no parameter. Make sure the row_no values specified in updates_matrix are all the same for valid insert operation. Different row_no values may have unintended results
-            - The original file will not be overwritten, instead, another file with a name specified in the paramter "dest" will be created.
+            - The original file will not be overwritten, instead, another file with a name specified in the parameter "dest" will be created.
         required: true
         type: str
         
@@ -55,7 +55,7 @@ options:
     
     read_range:
         description:
-            - The start and end cell references to specificy the range to read from the sheet(s).
+            - The start and end cell references to specify the range to read from the sheet(s).
         type: dict
         default: if missing, the module will read the entire excel sheet (or the entire workbook if the sheet name not specified)
         elements:
@@ -72,8 +72,9 @@ options:
     cell_style: 
         description:
             - The foreground and background color of the cell(s) being updated
-            - If omitted, the cell will be updated with the current excisting colors, no change will happen.
+            - If omitted, the cell will be updated with the current existing colors, no change will happen.
         type: dict
+        default: If omitted, no style will be applied to the cell(s) being updated
         elements:
             - fontColor: A string representing the RGB value of the font color of the cell(s) being updated.
             - bgColor: A string representing the RGB value of the background color of the cell(s) being updated.

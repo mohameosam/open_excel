@@ -35,7 +35,7 @@ options:
 
     search_range:
         description:
-            - The start and end cell references to specificy the range at which the search-token will be looked at.
+            - The start and end cell references to specify the range at which the search-token will be looked at.
         type: dict
         default: if missing, the module will look in the entire excel sheet (or the entire workbook if the sheet name not specified)
         elements:
@@ -55,7 +55,7 @@ options:
             - If both "wx" options are specified, the "w" option will be ignored, and module will search for exact cell content
             - Any other character specified in the search_options will be ignored.
         type: str
-        default: if omitted, a case-sensitive search for any occarance of "search_token" will be processed
+        default: if omitted, a case-sensitive search for any occurrence of "search_token" will be processed
 
     sheet_name:
         description:
