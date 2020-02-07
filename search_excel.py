@@ -79,9 +79,10 @@ list:
     returned: on success
     type: list
     sample:
-        - [{row_no:11, col_no:5},{row_no:19, col_no:2}, {row_no:23, col_no:7}]
-        - [{row_no:2, col_no:3}]
+        - [{sheet_name:"Employee", row_no:11, col_no:5},{sheet_name:"Employee", row_no:19, col_no:2}, {sheet_name:"Employee", row_no:23, col_no:7}]
+        - [{sheet_name:"City", row_no:2, col_no:3}]
     elements:
+        - sheet_name: The name of the sheet where the specified search_token was found.
         - row_no: Along with "col_no" specifies the cell reference where the specified search_token was found.
         - col_no: Along with "row_no" specifies the cell reference where the specified search_token was found.    
 '''
@@ -133,6 +134,7 @@ EXAMPLES = '''
         when: cell_list.list[0]['row_no'] is undefined
         
 '''
+
 
 
 import openpyxl
@@ -209,7 +211,7 @@ def search_xl_content(excel_file, search_token, search_range, search_options, sh
                         found_token = search_token in cell_val                        
 
                     if found_token:
-                        temp_dict = {'row_no': row, 'col_no': col}
+                        temp_dict = {'sheet_name': asheet_name, 'row_no': row, 'col_no': col}
                         retval['list'].append(dict(temp_dict))
                         
     except Exception as e:
