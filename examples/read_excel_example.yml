@@ -1,0 +1,56 @@
+---
+# Playbook Objective: open_excel and search_excel Module Example
+##
+# By: Mohamed Abouahmed / Kovarus, mabouahmed@kovarus.com, mohamedosam@gmail.com
+# build_no = '0.0.1'
+# Description: This playbook will search for a specific device in an excel sheet and display its information
+# Last Update: 2020-02-05
+#########################################################################################################################
+
+  - name: Read Excel File
+    hosts: localhost
+    connection: local
+    gather_facts: no
+
+    vars:
+        search_range:
+          start_col: 1 # Search only in the 1st column of the sheet
+          end_col: 1
+          start_row: 2 # Serach from row #2 till the end of the sheet (no end_row is specified)
+          
+    vars_prompt:
+      - name: "search_device"
+        prompt: "Serach For "
+        private: no
+        
+    tasks:
+      - name: Looking-up Device IP
+        search_excel:
+          src: "device_list.xlsx"
+          search_token: "{{ search_device }}"
+          search_range: "{{ search_range }}"
+          search_options: "ix"                  # "i" to ignore case, "x" for exact match
+          sheet_name: "Devices"
+        register: device_list
+
+      - debug: var=device_list.list      # Show the excel sheet cell reference(s) where your search device was located
+      
+      # Now display device Loopback0 IP found in the excelsheet (first occarance). The Loopback0 IP address is located at column #2
+      - set_fact:
+          read_range: "{{ read_range|default({}) | combine( {'start_row': device_list.list[0]['row_no'], 'start_col': 2, 'end_row': device_list.list[0]['row_no'], 'end_col': 2 } ) }}"
+        when: device_list.list[0]['row_no'] is defined # That's if the device specified is found in the sheet
+        
+      - name: Show Device Loopback0 IP Address
+        register: result
+        open_excel:
+          src: "device_list.xlsx"
+          sheet_name: "Devices"         
+          op: "r"
+          read_range: "{{ read_range }}"
+        when: device_list.list[0]['row_no'] is defined # That's if the device specified is found in the sheet
+          
+      - debug: var=result
+        when: device_list.list[0]['row_no'] is defined
+
+      - debug: msg="Specified device was NOT found"
+        when: device_list.list[0]['row_no'] is undefined

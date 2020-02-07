@@ -1,0 +1,34 @@
+---
+# Playbook Objective: open_excel and search_excel Module Example
+##
+# By: Mohamed Abouahmed / Kovarus, mabouahmed@kovarus.com, mohamedabou99@yahoo.com
+# build_no = '0.0.1'
+# Description: This playbook will update device location and serial_number in the excel sheet (with green color)
+# Last Update: 2020-02-05
+#########################################################################################################################
+
+  - name: Update Excel File
+    hosts: localhost
+    connection: local
+    gather_facts: no
+
+    vars:        
+      #hypothetical device information to be updated. For the sake of this example, just update row#4 (R550) and row#5 (S110)
+      updates_matrix: "[{'cell_row': 4, 'cell_col':3, 'cell_value':'San Jose' }, {'cell_row': 4, 'cell_col':4, 'cell_value':'FJC2940F36E' }, {'cell_row': 5, 'cell_col':3, 'cell_value':'Sacramento' }, {'cell_row': 5, 'cell_col':4, 'cell_value':'XXX4444F123' } ]"
+
+      #write your updates with light green background and darkgreen bold font color
+      cell_style:
+        fontColor: '006100'
+        bgColor: 'C6EFCE'
+        bold: True
+      
+        
+    tasks:
+      - name: write the updates into the excel sheet
+        open_excel:
+          src: "device_list.xlsx"
+          dest: "device_list_updated.xlsx"
+          sheet_name: "Devices"      
+          op: "w"
+          updates_matrix: "{{ updates_matrix }}"
+          cell_style: "{{ cell_style }}"
