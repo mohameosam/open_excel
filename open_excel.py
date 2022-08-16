@@ -88,6 +88,13 @@ options:
         type: str
         default: sheet_name can only be omitted when the Excel sheet is opened as "r" (read-only). When omitted, the entire worksheet is opened and returned
 
+    header_row:
+        description:
+            - The row number which has the col headers
+            - Only applicable when index_by_name is True
+        type: int
+        default: 1
+
 
 requirements:
     - openpyxl Python library must be installed on the Ansible host.
@@ -207,7 +214,7 @@ import openpyxl
 #########################################################
 ####     READ CONTENT: read_xl_content
 #########################################################
-def read_xl_content(excel_file, index_by_name, read_range, sheet_name):
+def read_xl_content(excel_file, index_by_name, read_range, sheet_name, header_row=1):
     
     retval = {}
     excelsheet = {}
@@ -234,6 +241,11 @@ def read_xl_content(excel_file, index_by_name, read_range, sheet_name):
     except Exception as e:
         end_col = 0
 
+    try:
+        hdr_row = int(header_row)
+    except Exception as e:
+        hdr_row = 1
+
     
     
     try:
@@ -258,7 +270,7 @@ def read_xl_content(excel_file, index_by_name, read_range, sheet_name):
             dict_keys = []
             for col in range(start_col, end_col):
                 if index_by_name:
-                    dict_keys.append(str(current_sheet.cell(row=1, column=col).value))
+                    dict_keys.append(str(current_sheet.cell(row=hdr_row, column=col).value))
                 else:
                     dict_keys.append('col_'+str(col))
             for row in range (start_row, end_row):
@@ -380,7 +392,8 @@ def main():
              read_range = dict(type='dict',required=False),
              updates_matrix = dict(type='list',required=False),
              cell_style = dict(type='dict',required=False),
-             sheet_name = dict(required=False)
+             sheet_name = dict(required=False),
+             header_row = dict(type='int',default=1,required=False)
              ),
              add_file_common_args=True)
     
@@ -388,7 +401,7 @@ def main():
     op = module.params["op"]
     
     if op == "r":
-        ret_code, response = read_xl_content(module.params["src"], module.params["index_by_name"], module.params["read_range"], module.params["sheet_name"])
+        ret_code, response = read_xl_content(module.params["src"], module.params["index_by_name"], module.params["read_range"], module.params["sheet_name"], module.params["header_row"])
     elif op == "w" or op == "a" or op == "i":
         try:
             dest_filename = module.params["dest"]
